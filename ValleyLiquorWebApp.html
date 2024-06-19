@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coolers</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .title-bar {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-size: 2em;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .products {
+            width: 100%;
+            max-width: 1200px;
+        }
+        .product-type {
+            font-size: 1.25em;
+            font-weight: bold;
+            color: #007bff;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .product-name {
+            font-size: 1.25em;
+            text-align: center;
+        }
+        .quantity-display, .quantity-input {
+            width: 60%;
+            max-width: 100px;
+            margin: 10px auto;
+            text-align: center;
+        }
+        .quantity-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        .product-item img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            color: #aaa;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            color: #ff0000;
+        }
+        body {
+            padding-top: 70px; /* Space for the fixed navbar */
+            background-color: #f1f1f1;
+        }
+        .navbar {
+            background-color: #343a40 !important;
+        }
+        .navbar-brand, .nav-link {
+            color: #fff !important;
+        }
+        .nav-link:hover {
+            color: #d4d4d4 !important;
+        }
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+        .floating-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">Liquor Store</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#coolers-section">Cooler</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#sleeman-section">Sleeman</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#bigrock-section">BigRock</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Coolers Section -->
+<div id="coolers-section" class="title-bar">
+    Coolers
+</div>
+<div class="section">
+    <!-- Cooler Products -->
+    <div id="cooler-products" class="products"></div>
+</div>
+
+<!-- Sleeman Section -->
+<div id="sleeman-section" class="title-bar">
+    Sleeman
+</div>
+<div class="section">
+    <!-- Sleeman Products -->
+    <div id="sleeman-products" class="products"></div>
+</div>
+
+<!-- BigRock Section -->
+<div id="bigrock-section" class="title-bar">
+    BigRock
+</div>
+<div class="section">
+    <!-- BigRock Products -->
+    <div id="bigrock-products" class="products"></div>
+</div>
+
+<!-- Floating Add Button -->
+<button class="floating-btn" onclick="showAddProductModal()">+</button>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="addProductForm">
+          <div class="form-group">
+            <label for="productImage">Product Image</label>
+            <input type="file" class="form-control" id="productImage" accept="image/*">
+          </div>
+          <div class="form-group">
+            <label for="productType">Product Type</label>
+            <input type="text" class="form-control" id="productType" required>
+          </div>
+          <div class="form-group">
+            <label for="productName">Product Name</label>
+            <input type="text" class="form-control" id="productName" required>
+          </div>
+          <div class="form-group">
+            <label for="productSection">Product Section</label>
+            <select class="form-control" id="productSection" required>
+              <option value="coolers-section">Coolers</option>
+              <option value="sleeman-section">Sleeman</option>
+              <option value="bigrock-section">BigRock</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="productQuantity">Product Quantity</label>
+            <input type="number" class="form-control" id="productQuantity" min="0" value="0" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="saveProduct()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Firebase SDK -->
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-xZlZVvzZGoAS0WP9h28jUI_RsJ3Vwxw",
+      authDomain: "valley-liquor.firebaseapp.com",
+      projectId: "valley-liquor",
+      storageBucket: "valley-liquor.appspot.com",
+      messagingSenderId: "15253457884",
+      appId: "1:15253457884:web:43852a182e3a510ff6dd19",
+      measurementId: "G-G7NL4TNTB1",
+      databaseURL: "https://valley-liquor-default-rtdb.firebaseio.com"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+
+    // Save Product to Firebase
+    window.saveProduct = function() {
+        const type = document.getElementById('productType').value;
+        const name = document.getElementById('productName').value;
+        const section = document.getElementById('productSection').value;
+        const quantity = document.getElementById('productQuantity').value;
+        const imageInput = document.getElementById('productImage');
+        const file = imageInput.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = function() {
+            const imageUrl = reader.result;
+            const newProduct = {
+                type: type,
+                name: name,
+                image: imageUrl,
+                quantity: Number(quantity),
+                section: section
+            };
+
+            // Save to Firebase
+            const newProductRef = push(ref(database, 'products'));
+            set(newProductRef, newProduct);
+
+            $('#addProductModal').modal('hide');
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            alert('Please upload an image.');
+        }
+    }
+
+    // Generate Products from Firebase
+    function generateProducts() {
+        onValue(ref(database, 'products'), (snapshot) => {
+            const products = snapshot.val();
+            const coolerProducts = [];
+            const sleemanProducts = [];
+            const bigrockProducts = [];
+
+            for (let id in products) {
+                const product = products[id];
+                if (product.section === 'coolers-section') {
+                    coolerProducts.push({ ...product, id });
+                } else if (product.section === 'sleeman-section') {
+                    sleemanProducts.push({ ...product, id });
+                } else if (product.section === 'bigrock-section') {
+                    bigrockProducts.push({ ...product, id });
+                }
+            }
+
+            renderProducts('cooler-products', coolerProducts, 'coolers-section');
+            renderProducts('sleeman-products', sleemanProducts, 'sleeman-section');
+            renderProducts('bigrock-products', bigrockProducts, 'bigrock-section');
+        });
+    }
+
+    function renderProducts(containerId, products, section) {
+        const container = document.getElementById(containerId);
+        let productItems = '<div class="row">';
+        products.forEach((product) => {
+            productItems += createProductItem(product.id, product.type, product.name, product.image, product.quantity, section);
+        });
+        productItems += '</div>';
+        container.innerHTML = productItems;
+    }
+
+    generateProducts();
+
+    // Update Quantity in Firebase
+    window.updateQuantity = function(productId) {
+        const inputField = document.getElementById(`input-${productId}`);
+        const displayField = document.getElementById(`display-${productId}`);
+        displayField.textContent = inputField.value;
+
+        // Update Firebase
+        const productRef = ref(database, 'products/' + productId);
+        set(productRef, { quantity: Number(inputField.value) }, { merge: true });
+    }
+
+    // Delete Product from Firebase
+    window.deleteProduct = function(productId) {
+        const productRef = ref(database, 'products/' + productId);
+        remove(productRef);
+    }
+
+    window.showAddProductModal = function() {
+        $('#addProductModal').modal('show');
+    }
+
+    function createProductItem(productId, productType, productName, imageUrl, quantity, section) {
+        return `
+                <div class="col-6 col-md-4 col-lg-2 mb-4">
+                    <div class="product-item">
+                        <button class="delete-btn" onclick="deleteProduct('${productId}')">&times;</button>
+                        <img src="${imageUrl}" alt="${productName}">
+                        <div class="product-type">${productType}</div>
+                        <div class="product-name">${productName}</div>
+                        <div class="quantity-display" id="display-${productId}">${quantity}</div>
+                        <div class="quantity-input-container">
+                            <input type="number" min="1" class="form-control quantity-input" id="input-${productId}" placeholder="Quantity">
+                            <button class="btn btn-primary btn-sm ml-2" onclick="updateQuantity('${productId}')">OK</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+    }
+</script>
+</body>
+</html>
