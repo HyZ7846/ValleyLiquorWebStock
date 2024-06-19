@@ -220,7 +220,7 @@
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-    import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -313,12 +313,14 @@
     // Update Quantity in Firebase
     window.updateQuantity = function(productId) {
         const inputField = document.getElementById(`input-${productId}`);
-        const displayField = document.getElementById(`display-${productId}`);
-        displayField.textContent = inputField.value;
+        const newQuantity = Number(inputField.value);
 
         // Update Firebase
         const productRef = ref(database, 'products/' + productId);
-        set(productRef, { quantity: Number(inputField.value) }, { merge: true });
+        update(productRef, { quantity: newQuantity });
+
+        const displayField = document.getElementById(`display-${productId}`);
+        displayField.textContent = newQuantity;
     }
 
     // Delete Product from Firebase
