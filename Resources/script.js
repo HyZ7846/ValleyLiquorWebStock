@@ -119,14 +119,21 @@ let db;
                 res[0].values.forEach(row => {
                     html += `
                         <div class="col-6 col-md-4 col-lg-2">
-                            <div class="product-item">
+                            <div class="product-item" style="font-size: 0.85rem; line-height: 1.2;">
                                 <button class="delete-btn" onclick="deleteItem(${row[0]})">&times;</button>
-                                <img src="${row[5]}">
-                                <b>${row[1]}</b>
-                                <div>${row[2]}</div>
-                                <h4 id="qty-${row[0]}">${row[4]}</h4>
-                                <input type="number" id="in-${row[0]}" class="form-control mb-1" style="width:60px">
-                                <button class="btn btn-sm btn-success" onclick="updateQty(${row[0]})">OK</button>
+                                <img src="${row[5]}" style="margin-bottom: 8px;" alt="product">
+                                
+                                <b class="d-block text-truncate" style="font-size: 0.9rem;">${row[2]}</b> 
+                                <div class="text-muted text-truncate">${row[1]}</div>
+                                
+                                <b id="qty-${row[0]}" class="mt-2 mb-1" style="font-weight: bold;">Stock: ${row[4]}</b>
+                                
+                                <div class="d-flex align-items-center justify-content-start mt-1">
+                                    <label for="in-${row[0]}" class="mr-2 mb-0" style="font-size: 0.75rem;">Qty:</label>
+                                    <input type="number" id="in-${row[0]}" class="form-control form-control-sm" style="width:50px; height: 25px; font-size: 0.75rem;">
+                                </div>
+                                
+                                <button class="btn btn-sm btn-success btn-block mt-2" style="font-size: 0.75rem; padding: 2px 5px;" onclick="updateQty(${row[0]})">OK</button>
                             </div>
                         </div>`;
                 });
