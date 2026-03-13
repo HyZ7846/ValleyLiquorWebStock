@@ -12,7 +12,7 @@
         .title-bar { text-align: center; margin-top: 20px; margin-bottom: 20px; font-size: 2em; font-weight: bold; padding: 10px; background-color: #f8f9fa; border-radius: 5px; }
         .section { display: flex; justify-content: center; align-items: center; margin-top: 20px; }
         .products { width: 100%; max-width: 1200px; }
-        .product-item { position: relative; display: flex; flex-direction: column; align-items: center; padding: 15px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #fff; height: 350px; width: 200px;}
+        .product-item { position: relative; display: flex; flex-direction: column; align-items: center; padding: 15px; margin: 10px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #fff; height: 350px; width: 200px;}
         .product-item img { border-radius: 5px; height: 150px; object-fit: contain; max-width: 150px; max-height: 150px;}
         .delete-btn { position: absolute; top: 5px; right: 5px; background: transparent; border: none; font-size: 1.5rem; color: #aaa; cursor: pointer; }
         .delete-btn:hover { color: #ff0000; }
@@ -78,9 +78,9 @@
 <div id="menuOverlay" onclick="toggleRotation()"></div>
 
 <div id="sideMenu" class="side-nav">
-    <a href="#coolers-section" class="menu-link" onclick="toggleRotation()">Coolers</a>
-    <a href="#sleeman-section" class="menu-link" onclick="toggleRotation()">Sleeman</a>
-    <a href="#bigrock-section" class="menu-link" onclick="toggleRotation()">BigRock</a>
+    <a href="#beers-section" class="menu-link" onclick="toggleRotation()">beers</a>
+    <a href="#wines-section" class="menu-link" onclick="toggleRotation()">wines</a>
+    <a href="#spirits-section" class="menu-link" onclick="toggleRotation()">spirits</a>
     <div style="margin-top: 20px; padding: 0 25px;">
         <button class="btn btn-outline-light btn-block" onclick="showAddProductModal(); toggleRotation();">Add Product</button>
     </div>
@@ -91,21 +91,21 @@
          <a class="navbar-brand" href="#" style="font-weight: bold;">Valley Liquor Store</a>
 </nav>
 
-<div id="coolers-section" class="title-bar">Coolers</div>
+<div id="beers-section" class="title-bar">beers</div>
 <div class="section">
-    <div id="coolers-products" class="products"></div> </div>
+    <div id="beers-products" class="products"></div> </div>
 
-<div id="sleeman-section" class="title-bar">Sleeman</div>
+<div id="wines-section" class="title-bar">wines</div>
 <div class="section">
-    <div id="sleeman-products" class="products"></div>
+    <div id="wines-products" class="products"></div>
 </div>
 
-<div id="bigrock-section" class="title-bar">BigRock</div>
+<div id="spirits-section" class="title-bar">spirits</div>
 <div class="section">
-    <div id="bigrock-products" class="products"></div>
+    <div id="spirits-products" class="products"></div>
 </div>
-
-<button class="floating-btn" onclick="showAddProductModal()">+</button>
+<!-- 
+<button class="floating-btn" onclick="showAddProductModal()">+</button> -->
 
 <div class="modal fade" id="addProductModal" tabindex="-1">
   <div class="modal-dialog">
@@ -114,18 +114,18 @@
       <div class="modal-body">
         <form id="addProductForm">
           <input type="file" class="form-control mb-2" id="productImage" accept="image/*">
-          <input type="text" class="form-control mb-2" id="productType" placeholder="Type (e.g. Beer)" required>
+          <input type="text" class="form-control mb-2" id="productType" placeholder="Company (e.g. Labatte)" required>
           <input type="text" class="form-control mb-2" id="productName" placeholder="Product Name" required>
           <select class="form-control mb-2" id="productSection" required>
-              <option value="coolers-section">Coolers</option>
-              <option value="sleeman-section">Sleeman</option>
-              <option value="bigrock-section">BigRock</option>
+              <option value="beers-section">beers</option>
+              <option value="wines-section">wines</option>
+              <option value="spirits-section">spirits</option>
           </select>
           <input type="number" class="form-control mb-2" id="productQuantity" placeholder="Quantity" value="0">
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="saveProduct()">Save to SQL</button>
+        <button type="button" class="btn btn-primary" onclick="saveProduct()">Save</button>
       </div>
     </div>
   </div>

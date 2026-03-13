@@ -99,13 +99,13 @@ let db;
     }
 
     function renderAll() {
-        const sections = ['coolers-section', 'sleeman-section', 'bigrock-section'];
+        const sections = ['beers-section', 'wines-section', 'spirits-section'];
         
         sections.forEach(sec => {
             // PURE SQL SELECT
             const res = db.exec("SELECT * FROM products WHERE section = '" + sec + "'");
             
-            // This converts 'coolers-section' to 'coolers-products'
+            // This converts 'beers-section' to 'beers-products'
             const containerId = sec.replace('-section', '-products');
             const container = document.getElementById(containerId);
             
