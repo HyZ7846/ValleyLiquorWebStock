@@ -105,41 +105,57 @@ let db;
             // PURE SQL SELECT
             const res = db.exec("SELECT * FROM products WHERE section = '" + sec + "'");
             
-            // This converts 'beers-section' to 'beers-products'
+            const titleBar = document.getElementById(sec);
             const containerId = sec.replace('-section', '-products');
-            const container = document.getElementById(containerId);
-            
-            if (!container) {
-                console.error("Could not find container:", containerId);
+            const productContainer = document.getElementById(containerId);
+            // The parent '.section' div that wraps the product grid
+            const sectionWrapper = productContainer ? productContainer.closest('.section') : null;
+    
+            if (!productContainer || !titleBar || !sectionWrapper) {
+                console.error("Could not find elements for section:", sec);
                 return;
             }
     
-            let html = '<div class="row">';
-            if (res.length > 0) {
-                res[0].values.forEach(row => {
-                    html += `
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <div class="product-item" style="font-size: 0.85rem; line-height: 1.2;">
-                                <button class="delete-btn" onclick="deleteItem(${row[0]})">&times;</button>
-                                <img src="${row[5]}" style="margin-bottom: 8px;" alt="product">
-                                
-                                <b class="d-block text-truncate" style="font-size: 0.9rem;">${row[2]}</b> 
-                                <div class="text-muted text-truncate">${row[1]}</div>
-                                
-                                <b id="qty-${row[0]}" class="mt-2 mb-1" style="font-weight: bold;">Stock: ${row[4]}</b>
-                                
-                                <div class="d-flex align-items-center justify-content-start mt-1">
-                                    <label for="in-${row[0]}" class="mr-2 mb-0" style="font-size: 0.75rem;">Qty:</label>
-                                    <input type="number" id="in-${row[0]}" class="form-control form-control-sm" style="width:50px; height: 25px; font-size: 0.75rem;">
-                                </div>
-                                
-                                <button class="btn btn-sm btn-success btn-block mt-2" style="font-size: 0.75rem; padding: 2px 5px;" onclick="updateQty(${row[0]})">OK</button>
-                            </div>
-                        </div>`;
-                });
+            // Behavior: Toggle visibility based on whether products exist
+            if (res.length === 0 || res[0].values.length === 0) {
+                titleBar.style.display = 'none';
+                sectionWrapper.style.display = 'none';
+                productContainer.innerHTML = ''; // Clear content
+                return; // Move to next section
+            } else {
+                titleBar.style.display = 'block';
+                sectionWrapper.style.display = 'flex';
             }
+    
+            // Render products if they exist
+            let html = '<div class="row w-100">'; // Added w-100 for better layout
+            res[0].values.forEach(row => {
+                html += `
+                    <div class="col-6 col-md-4 col-lg-2 mb-4"> <div class="product-item" style="font-size: 0.85rem; line-height: 1.2; position: relative; min-height: 250px; padding-bottom: 50px;">
+                            <button class="delete-btn" onclick="deleteItem(${row[0]})">&times;</button>
+                            
+                            <img src="${row[5]}" alt="product">
+                            
+                            <b class="d-block text-truncate" style="font-size: 0.8rem; width: 100%;">${row[2]}</b> 
+                            <div class="text-muted text-truncate" style="font-size: 0.8rem; width: 100%;">${row[1]}</div>
+                            
+                            <p id="qty-${row[0]}" style="font-size: 0.8rem;" class="mt-2">Stock: ${row[4]}</p>
+                            
+                            <div class="d-flex">
+                                <label for="in-${row[0]}" class="mr-2 mb-0" style="font-size: 0.75rem;">Qty:</label>
+                                <input type="number" id="in-${row[0]}" class="form-control form-control-sm" style="width:50px; height: 25px;">
+                            </div>
+
+                            <button class="btn btn-sm btn-success" 
+                                style="font-size: 0.7rem; padding: 2px 10px; position: absolute; bottom: 15px; right: 15px;" 
+                                onclick="updateQty(${row[0]})">
+                                OK
+                            </button>
+                        </div>
+                    </div>`;
+            });
             html += '</div>';
-            container.innerHTML = html;
+            productContainer.innerHTML = html;
         });
     }
 
@@ -159,6 +175,35 @@ let db;
     };
 
     window.showAddProductModal = () => $('#addProductModal').modal('show');
+
+    window.searchProducts = function() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        
+        // Select all product items currently displayed
+        const items = document.querySelectorAll('.product-item');
+        
+        items.forEach(item => {
+            // We look at the <b> (Company) and <div> (Name) inside each card
+            const company = item.querySelector('b').innerText.toLowerCase();
+            const name = item.querySelector('div.text-muted').innerText.toLowerCase();
+            
+            // Find the outer column wrapper to hide/show
+            const column = item.closest('.col-6'); 
+            
+            if (company.includes(query) || name.includes(query)) {
+                column.style.display = 'block';
+            } else {
+                column.style.display = 'none';
+            }
+        });
+    };
+    
+    // Optional: Search while typing (Real-time)
+    document.getElementById('searchInput')?.addEventListener('input', searchProducts);
+
+
+
+
 
     document.addEventListener('DOMContentLoaded', () => {
         initDatabase();

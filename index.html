@@ -4,74 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valley Liquor Stock</title>
+    <link rel="stylesheet" href="./Resources/style.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
-    
-    <style>
-        .title-bar { text-align: center; margin-top: 20px; margin-bottom: 20px; font-size: 2em; font-weight: bold; padding: 10px; background-color: #f8f9fa; border-radius: 5px; }
-        .section { display: flex; justify-content: center; align-items: center; margin-top: 20px; }
-        .products { width: 100%; max-width: 1200px; }
-        .product-item { position: relative; display: flex; flex-direction: column; align-items: left; padding: 15px; margin: 10px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #fff; height: 350px; width: 200px;}
-        .product-item img { border-radius: 5px; height: 150px; object-fit: contain; max-width: 150px; max-height: 150px; padding-bottom: 20px;}
-        .delete-btn { position: absolute; top: 5px; right: 5px; background: transparent; border: none; font-size: 1.5rem; color: #aaa; cursor: pointer; }
-        .delete-btn:hover { color: #ff0000; }
-        body { padding-top: 70px; background-color: #f1f1f1; }
-        .floating-btn { position: fixed; bottom: 20px; right: 20px; background-color: #5E1224; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); cursor: pointer; z-index: 1000;}
-        .nav-icon {
-            transition: transform 0.3s ease;
-            cursor: pointer;
-        }
-        .rotate-90 {
-            transform: rotate(90deg);
-        }
-        .side-nav {
-            height: 100%;
-            width: 180px;
-            position: fixed;
-            z-index: 1030; /* Above navbar content but below modal */
-            top: 0;
-            left: -250px; /* Start hidden off-screen */
-            background-color: #5E1224;
-            transition: 0.3s ease;
-            padding-top: 90px; /* Space for the navbar */
-            box-shadow: 4px 0 10px rgba(0,0,0,0.3);
-        }
-    
-        /* Active State */
-        .side-nav.active {
-            left: 0;
-        }
-    
-        /* Menu Links */
-        .menu-link {
-            padding: 15px 25px;
-            text-decoration: none;
-            font-size: 1.2rem;
-            color: white;
-            display: block;
-            transition: 0.2s;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-    
-        .menu-link:hover {
-            background-color: #7a1a31;
-            color: #ffd700;
-            text-decoration: none;
-        }
-    
-        /* Dimmed Overlay */
-        #menuOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1025;
-            display: none;
-        }
-    </style>
 </head>
 <body>
 
@@ -87,8 +23,25 @@
 </div>
 
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top py-3" style="background-color: #5E1224 !important;">
-    <img src="./Resources/navBtn.png" id="navBtnImg"alt="nav-btn" width="30" height="30" class="mr-4 nav-icon" onclick="toggleRotation()">
-         <a class="navbar-brand" href="#" style="font-weight: bold;">Valley Liquor Store</a>
+    <div class="d-flex align-items-center">
+        <img src="./Resources/navBtn.png" id="navBtnImg" alt="nav-btn" width="30" height="30" class="mr-4 nav-icon" onclick="toggleRotation()">
+        <a class="navbar-brand" href="#" style="font-weight: bold;">Valley Liquor Store</a>
+    </div>
+
+    <form class="form-inline ml-auto" onsubmit="event.preventDefault(); searchProducts();">
+        <div class="input-group search-container">
+            <input class="form-control form-control-sm rounded-pill border-0 px-3" 
+                   type="search" 
+                   id="searchInput" 
+                   placeholder="Search products..." 
+                   style="width: 220px; background-color: #ddd; color: #333; height: 32px;">
+            
+            <button class="btn btn-sm" type="button" onclick="searchProducts()" 
+                    style="position: absolute; right: 10px; z-index: 10; background: transparent; border: none; color: #888;">
+                🔍
+            </button>
+        </div>
+    </form>
 </nav>
 
 <div id="beers-section" class="title-bar">beers</div>
@@ -113,15 +66,35 @@
       <div class="modal-header"><h5 class="modal-title">Add Product</h5></div>
       <div class="modal-body">
         <form id="addProductForm">
-          <input type="file" class="form-control mb-2" id="productImage" accept="image/*">
-          <input type="text" class="form-control mb-2" id="productType" placeholder="Company (e.g. Labatte)" required>
-          <input type="text" class="form-control mb-2" id="productName" placeholder="Product Name" required>
-          <select class="form-control mb-2" id="productSection" required>
-              <option value="beers-section">beers</option>
-              <option value="wines-section">wines</option>
-              <option value="spirits-section">spirits</option>
-          </select>
-          <input type="number" class="form-control mb-2" id="productQuantity" placeholder="Quantity" value="0">
+            <div class="form-group mb-3">
+                <label for="productImage" class="font-weight-bold" style="font-size: 0.9rem;">Product Image</label>
+                <input type="file" class="form-control" id="productImage" accept="image/*">
+                <small class="text-muted">Max 64MB (defaults to generic image if empty or too large)</small>
+            </div>
+        
+            <div class="form-group mb-3">
+                <label for="productType" class="font-weight-bold" style="font-size: 0.9rem;">Company / Brand</label>
+                <input type="text" class="form-control" id="productType" placeholder="e.g. Labatt, Smirnoff" required>
+            </div>
+        
+            <div class="form-group mb-3">
+                <label for="productName" class="font-weight-bold" style="font-size: 0.9rem;">Product Name</label>
+                <input type="text" class="form-control" id="productName" placeholder="e.g. Blue, Ice Berry Blast" required>
+            </div>
+        
+            <div class="form-group mb-3">
+                <label for="productSection" class="font-weight-bold" style="font-size: 0.9rem;">Store Section</label>
+                <select class="form-control" id="productSection" required>
+                    <option value="beers-section">Beers</option>
+                    <option value="wines-section">Wines</option>
+                    <option value="spirits-section">Spirits</option>
+                </select>
+            </div>
+        
+            <div class="form-group mb-3">
+                <label for="productQuantity" class="font-weight-bold" style="font-size: 0.9rem;">Stock Quantity</label>
+                <input type="number" class="form-control" id="productQuantity" placeholder="Quantity" value="0">
+            </div>
         </form>
       </div>
       <div class="modal-footer">
